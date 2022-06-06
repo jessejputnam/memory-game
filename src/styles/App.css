@@ -1,0 +1,12 @@
+.App {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.Card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
