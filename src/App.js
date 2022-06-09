@@ -3,9 +3,8 @@ import uniqid from "uniqid";
 import "./styles/App.css";
 import { Card } from "./components/Card";
 
-// import poke1 from "./images/pikachu.jpeg";
+// ############################# Reused Functions ################################
 
-// Reused Functions
 const getRandomNums = (total) => {
   const nums = [];
 
@@ -32,24 +31,80 @@ const getMonsters = async function () {
   return randomNumsArr.map((num) => allMonsters.data[num]);
 };
 
+// ############################# Component ################################
+
 const App = function () {
   const [monsters, setMonsters] = useState([]);
+  const [score, setScore] = useState(0);
+  const [best, setBest] = useState(0);
+  const [guessed, setGuessed] = useState([]);
 
+  const loadMonsters = async () => {
+    const response = await getMonsters();
+
+    setMonsters(response);
+  };
+
+  const handleClick = function (e) {
+    if (!guessed.includes(e.target.alt)) {
+      // Add Guess to array
+      setGuessed([...guessed, e.target.alt]);
+
+      // Iterate score
+      setScore(score + 1);
+
+      // Shuffle monsters
+      const arrCopy = monsters.slice();
+      const shuffledArr = arrCopy.sort((a, b) => 0.5 - Math.random());
+      setMonsters(shuffledArr);
+    } else {
+      // Set new best if larger
+      if (score > best) setBest(score);
+
+      // Reset score and board
+      setScore(0);
+      loadMonsters();
+    }
+  };
+
+  // Component did mount cycle
   useEffect(() => {
-    const loadMonsters = async () => {
-      const response = await getMonsters();
-
-      setMonsters(response);
-    };
-
     loadMonsters();
   }, []);
 
   return (
     <div className='App'>
-      {monsters.map((monster) => (
-        <Card key={uniqid()} image={monster.image} name={monster.name}></Card>
-      ))}
+      <header>
+        <div className='app__header'>
+          <h1>Memory of the Wild</h1>
+          <p>
+            <strong>Directions: </strong>Click on images you have not already
+            clicked. Each click will get a point. Game will continue until you
+            click an already chosen image.
+          </p>
+        </div>
+        <div className='scoreboard'>
+          <div className='scoreboard__row'>
+            <p>Score:</p>
+            <p>{score}</p>
+          </div>
+          <div className='scoreboard__row'>
+            <p>Best:</p>
+            <p>{best}</p>
+          </div>
+        </div>
+      </header>
+
+      <div className='gameboard'>
+        {monsters.map((monster) => (
+          <Card
+            key={uniqid()}
+            image={monster.image}
+            name={monster.name}
+            handleClick={handleClick}
+          ></Card>
+        ))}
+      </div>
     </div>
   );
 };
