@@ -1,6 +1,6 @@
 .App {
   background: radial-gradient(closest-side, #fc9393, #da73b6, #cecece);
-  /* position: relative; */
+  min-height: 100vh;
 }
 
 * {
